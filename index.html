@@ -42,53 +42,57 @@
             max-width: 1200px;
         }
 
-        /* 紅海與乾地區域 (純 CSS 繪製) */
+        /* 紅海圖片展示區 */
         .sea-container {
             position: relative;
-            width: 400px;
+            width: 500px;
             height: 500px;
-            background-color: #e1b12c; /* 乾地的沙土色 */
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             overflow: hidden;
             border: 5px solid #2f3640;
         }
 
-        /* 左邊的海浪 */
+        /* 底層：已經分開的紅海 (您的第三張圖) */
+        .sea-background {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: url('./images/sea_parted.jpg'); /* 👉 請確認檔名 */
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+        }
+
+        /* 上層左半邊：未分開的海水 */
         .sea-left {
             position: absolute;
             top: 0; left: 0;
             width: 50%; height: 100%;
-            background: linear-gradient(90deg, #0984e3, #74b9ff);
+            background-image: url('./images/sea_closed.jpg'); /* 👉 請確認檔名 */
+            background-size: cover;
+            background-position: left center; /* 鎖定左邊 */
             transition: width 1.5s ease-in-out; /* 開路動畫 */
-            box-shadow: 5px 0 15px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
+            z-index: 2;
+            border-right: 3px solid rgba(255,255,255,0.6); /* 海浪邊緣反光 */
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
         }
 
-        /* 右邊的海浪 */
+        /* 上層右半邊：未分開的海水 */
         .sea-right {
             position: absolute;
             top: 0; right: 0;
             width: 50%; height: 100%;
-            background: linear-gradient(-90deg, #0984e3, #74b9ff);
+            background-image: url('./images/sea_closed.jpg'); /* 👉 請確認檔名 */
+            background-size: cover;
+            background-position: right center; /* 鎖定右邊 */
             transition: width 1.5s ease-in-out; /* 開路動畫 */
-            box-shadow: -5px 0 15px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
+            z-index: 2;
+            border-left: 3px solid rgba(255,255,255,0.6); /* 海浪邊緣反光 */
+            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
         }
 
-        /* 海浪邊緣的白色泡沫裝飾 */
-        .foam {
-            width: 15px;
-            height: 100%;
-            background-color: rgba(255,255,255,0.6);
-            filter: blur(3px);
-        }
-
-        /* 遊戲問答區 */
+        /* --- 以下問答區樣式不變 --- */
         .quiz-container {
             flex: 1;
             background: rgba(255, 255, 255, 0.05);
@@ -108,35 +112,12 @@
             display: inline-block;
         }
         
-        .timer {
-            font-size: 4em;
-            font-weight: 900;
-            color: #ff6b6b;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
-        }
-        
-        .dynamic-text {
-            height: 150px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
+        .timer { font-size: 4em; font-weight: 900; color: #ff6b6b; margin-bottom: 20px; }
+        .dynamic-text { height: 150px; display: flex; flex-direction: column; justify-content: center; margin-bottom: 20px; }
         .question { font-size: 1.6em; line-height: 1.4; }
         .answer { font-size: 1.8em; color: #1dd1a1; font-weight: bold; display: none; margin-top: 15px;}
         
-        button {
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            border-radius: 50px;
-            cursor: pointer;
-            margin: 8px;
-            transition: 0.3s;
-            font-weight: bold;
-        }
+        button { border: none; padding: 15px 30px; font-size: 1.2em; border-radius: 50px; cursor: pointer; margin: 8px; transition: 0.3s; font-weight: bold; }
         button:hover { transform: scale(1.05); }
         .btn-start { background: #feca57; color: #222; }
         .btn-show { background: #48dbfb; color: #222; display: none; }
@@ -148,7 +129,7 @@
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             padding: 40px;
             border-radius: 20px;
             border: 3px solid #f1c40f;
@@ -166,8 +147,9 @@
 
     <div class="main-container">
         <div class="sea-container">
-            <div class="sea-left" id="s-left"><div class="foam"></div></div>
-            <div class="sea-right" id="s-right"><div class="foam"></div></div>
+            <div class="sea-background"></div>
+            <div class="sea-left" id="s-left"></div>
+            <div class="sea-right" id="s-right"></div>
         </div>
 
         <div class="quiz-container">
@@ -289,12 +271,9 @@
             }
         }
 
-        // 核心動畫：控制海浪的寬度，讓中間露出乾地
         function updateSea() {
-            // 計算海浪還剩下多少百分比 (從 50% 遞減到 0%)
             let remainingSea = 50 - ((correctCount / totalToWin) * 50);
             if(remainingSea < 0) remainingSea = 0; 
-            
             document.getElementById('s-left').style.width = `${remainingSea}%`;
             document.getElementById('s-right').style.width = `${remainingSea}%`;
         }
