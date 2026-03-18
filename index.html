@@ -42,7 +42,7 @@
             max-width: 1200px;
         }
 
-        /* 紅海圖片展示區 */
+        /* 紅海圖片展示區 (1:1 比例) */
         .sea-container {
             position: relative;
             width: 500px;
@@ -53,7 +53,7 @@
             border: 5px solid #2f3640;
         }
 
-        /* 底層：已經分開的紅海 (您的第三張圖) */
+        /* 底層：已經分開的紅海 (您的精美圖片) */
         .sea-background {
             position: absolute;
             top: 0; left: 0;
@@ -64,32 +64,63 @@
             z-index: 1;
         }
 
-        /* 上層左半邊：未分開的海水 */
-        .sea-left {
+        /* 上層遮罩：高質感動態 CSS 海水 */
+        .sea-mask {
             position: absolute;
-            top: 0; left: 0;
+            top: 0;
             width: 50%; height: 100%;
-            background-image: url('./images/sea_closed.jpg'); /* 👉 請確認檔名 */
-            background-size: cover;
-            background-position: left center; /* 鎖定左邊 */
-            transition: width 1.5s ease-in-out; /* 開路動畫 */
             z-index: 2;
-            border-right: 3px solid rgba(255,255,255,0.6); /* 海浪邊緣反光 */
-            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+            transition: width 1.5s ease-in-out; /* 開路動畫 */
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); /* 增加立體感 */
         }
 
-        /* 上層右半邊：未分開的海水 */
-        .sea-right {
+        /* 左邊的海水 */
+        .sea-left {
+            left: 0;
+            /* 多層漸層模擬波紋和反光，並加上波浪動畫 */
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.4), transparent 30%),
+                linear-gradient(90deg, #0984e3, #74b9ff, #0984e3);
+            background-size: 400% 100%; /* 動畫需要 */
+            animation: waves 5s linear infinite; /* 波浪動畫 */
+            border-right: 3px solid rgba(255,255,255,0.7); /* 海浪邊緣反光 */
+            box-shadow: 5px 0 15px rgba(0,0,0,0.6);
+        }
+        /* 左邊海浪邊緣泡沫裝飾 */
+        .sea-left::after {
+            content: '';
             position: absolute;
             top: 0; right: 0;
-            width: 50%; height: 100%;
-            background-image: url('./images/sea_closed.jpg'); /* 👉 請確認檔名 */
-            background-size: cover;
-            background-position: right center; /* 鎖定右邊 */
-            transition: width 1.5s ease-in-out; /* 開路動畫 */
-            z-index: 2;
-            border-left: 3px solid rgba(255,255,255,0.6); /* 海浪邊緣反光 */
-            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+            width: 15px; height: 100%;
+            background-color: rgba(255,255,255,0.7);
+            filter: blur(3px);
+        }
+
+        /* 右邊的海水 */
+        .sea-right {
+            right: 0;
+            background: 
+                radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.4), transparent 30%),
+                linear-gradient(-90deg, #0984e3, #74b9ff, #0984e3);
+            background-size: 400% 100%;
+            animation: waves 5s linear infinite;
+            border-left: 3px solid rgba(255,255,255,0.7); /* 海浪邊緣反光 */
+            box-shadow: -5px 0 15px rgba(0,0,0,0.6);
+        }
+        /* 右邊海浪邊緣泡沫裝飾 */
+        .sea-right::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 15px; height: 100%;
+            background-color: rgba(255,255,255,0.7);
+            filter: blur(3px);
+        }
+
+        /* 波浪動態動畫定義 */
+        @keyframes waves {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 400% 0%; }
         }
 
         /* --- 以下問答區樣式不變 --- */
@@ -148,8 +179,8 @@
     <div class="main-container">
         <div class="sea-container">
             <div class="sea-background"></div>
-            <div class="sea-left" id="s-left"></div>
-            <div class="sea-right" id="s-right"></div>
+            <div class="sea-mask sea-left" id="s-left"></div>
+            <div class="sea-mask sea-right" id="s-right"></div>
         </div>
 
         <div class="quiz-container">
