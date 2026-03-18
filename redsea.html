@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌊 紅海開路大挑戰 🌊</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #1e272e;
+            color: #ecf0f1;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        h1 {
+            color: #f1c40f;
+            font-size: 2.8em;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            font-weight: 900;
+        }
+        .subtitle {
+            color: #bdc3c7;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            width: 95%;
+            max-width: 1200px;
+        }
+
+        /* 紅海與乾地區域 (純 CSS 繪製) */
+        .sea-container {
+            position: relative;
+            width: 400px;
+            height: 500px;
+            background-color: #e1b12c; /* 乾地的沙土色 */
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            border: 5px solid #2f3640;
+        }
+
+        /* 左邊的海浪 */
+        .sea-left {
+            position: absolute;
+            top: 0; left: 0;
+            width: 50%; height: 100%;
+            background: linear-gradient(90deg, #0984e3, #74b9ff);
+            transition: width 1.5s ease-in-out; /* 開路動畫 */
+            box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        /* 右邊的海浪 */
+        .sea-right {
+            position: absolute;
+            top: 0; right: 0;
+            width: 50%; height: 100%;
+            background: linear-gradient(-90deg, #0984e3, #74b9ff);
+            transition: width 1.5s ease-in-out; /* 開路動畫 */
+            box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        /* 海浪邊緣的白色泡沫裝飾 */
+        .foam {
+            width: 15px;
+            height: 100%;
+            background-color: rgba(255,255,255,0.6);
+            filter: blur(3px);
+        }
+
+        /* 遊戲問答區 */
+        .quiz-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+        
+        .turn-indicator {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: #00d2d3;
+            margin-bottom: 15px;
+            background: rgba(0, 210, 211, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        .timer {
+            font-size: 4em;
+            font-weight: 900;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+        
+        .dynamic-text {
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .question { font-size: 1.6em; line-height: 1.4; }
+        .answer { font-size: 1.8em; color: #1dd1a1; font-weight: bold; display: none; margin-top: 15px;}
+        
+        button {
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 8px;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+        button:hover { transform: scale(1.05); }
+        .btn-start { background: #feca57; color: #222; }
+        .btn-show { background: #48dbfb; color: #222; display: none; }
+        .btn-correct { background: #1dd1a1; color: #222; display: none; }
+        .btn-wrong { background: #576574; color: white; display: none; }
+
+        #victory-message {
+            display: none;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            border: 3px solid #f1c40f;
+            z-index: 100;
+            width: 80%;
+        }
+        #victory-message h2 { color: #1dd1a1; font-size: 3em; margin: 0 0 15px 0;}
+        #victory-message h3 { color: #f1c40f; font-size: 2em; line-height: 1.5;}
+    </style>
+</head>
+<body>
+
+    <h1>🌊 神蹟之路：紅海開路大挑戰 🌊</h1>
+    <div class="subtitle">兩組輪流答題，全班共同答對8題，紅海就會為我們分開！</div>
+
+    <div class="main-container">
+        <div class="sea-container">
+            <div class="sea-left" id="s-left"><div class="foam"></div></div>
+            <div class="sea-right" id="s-right"><div class="foam"></div></div>
+        </div>
+
+        <div class="quiz-container">
+            <div class="turn-indicator" id="turn-text">現在輪到：第一組</div>
+            <div class="timer" id="timer-text">10</div>
+            
+            <div class="dynamic-text">
+                <div class="question" id="q-text">準備好過紅海了嗎？點擊開始！</div>
+                <div class="answer" id="a-text">答案顯示區</div>
+            </div>
+            
+            <button class="btn-start" id="start-btn" onclick="startRound()">開始計時 (10秒)</button>
+            <button class="btn-show" id="show-ans-btn" onclick="showAnswer()">時間暫停 / 顯示答案</button>
+            <br>
+            <button class="btn-correct" id="correct-btn" onclick="markCorrect()">答對了！海水退去</button>
+            <button class="btn-wrong" id="wrong-btn" onclick="nextTeam()">不會 / 超時 (換組)</button>
+        </div>
+    </div>
+
+    <div id="victory-message">
+        <h2>🎉 紅海開了！我們得救了！</h2>
+        <h3>「我們逾越節的羔羊基督，<br>已經被殺獻祭了。」<br>(哥林多前書 5:7)</h3>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "以色列人在埃及住了多少年？", a: "430年" },
+            { q: "他們離開時，把什麼包在衣服中扛在肩頭上？", a: "沒有酵的生麵 (無酵餅)" },
+            { q: "以色列人離開時，向埃及人要了什麼東西？", a: "金器、銀器和衣裳" },
+            { q: "白天時，上帝用什麼在前面引導他們的路？", a: "雲柱" },
+            { q: "夜間時，上帝用什麼光照他們？", a: "火柱" },
+            { q: "上帝為什麼不帶他們走最近的「非利士地」的道路？", a: "怕百姓遇見打仗後悔，就回埃及去" },
+            { q: "當法老帶兵追來，以色列人非常害怕時，摩西叫百姓怎麼做？", a: "不要懼怕，只管站住！" },
+            { q: "摩西向海伸杖後，發生了什麼事？", a: "紅海分開，以色列人走乾地" },
+            { q: "法老的追兵最後的下場是什麼？", a: "海水回流，全軍淹沒在海中" },
+            { q: "以色列人到了「瑪拉」，那裡的水為什麼不能喝？", a: "因為水是苦的" },
+            { q: "上帝指示摩西把什麼丟進水裡，水就變甜了？", a: "一棵樹" },
+            { q: "他們後來到了「以琳」，那裡有什麼？", a: "十二股水泉，七十棵棕樹" },
+            { q: "今天的主題金句說，我們逾越節的什麼已經被殺獻祭了？", a: "羔羊基督" }
+        ];
+
+        let currentQIndex = 0;
+        let correctCount = 0;
+        const totalToWin = 8; 
+        let currentTeam = 1; 
+        let timeLeft = 10;
+        let timerInterval;
+
+        questions.sort(() => Math.random() - 0.5);
+
+        function prepareNext() {
+            document.getElementById('turn-text').innerText = currentTeam === 1 ? "現在輪到：第一組" : "現在輪到：第二組";
+            document.getElementById('turn-text').style.color = currentTeam === 1 ? "#00d2d3" : "#feca57";
+            
+            document.getElementById('q-text').innerText = "請點擊「開始計時」看題目";
+            document.getElementById('a-text').style.display = 'none';
+            document.getElementById('timer-text').innerText = "10";
+            document.getElementById('timer-text').style.color = "#ff6b6b";
+            
+            document.getElementById('start-btn').style.display = 'inline-block';
+            document.getElementById('show-ans-btn').style.display = 'none';
+            document.getElementById('correct-btn').style.display = 'none';
+            document.getElementById('wrong-btn').style.display = 'none';
+        }
+
+        function startRound() {
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('show-ans-btn').style.display = 'inline-block';
+            document.getElementById('q-text').innerText = questions[currentQIndex].q;
+            
+            timeLeft = 10;
+            document.getElementById('timer-text').innerText = timeLeft;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-text').innerText = timeLeft;
+                if (timeLeft <= 3) document.getElementById('timer-text').style.color = "#ee5253";
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timer-text').innerText = "超時！";
+                    showAnswer(); 
+                }
+            }, 1000);
+        }
+
+        function showAnswer() {
+            clearInterval(timerInterval); 
+            document.getElementById('a-text').innerText = "答案：" + questions[currentQIndex].a;
+            document.getElementById('a-text').style.display = 'block'; 
+            
+            document.getElementById('show-ans-btn').style.display = 'none';
+            document.getElementById('correct-btn').style.display = 'inline-block';
+            document.getElementById('wrong-btn').style.display = 'inline-block';
+        }
+
+        function markCorrect() {
+            correctCount++;
+            updateSea(); // 觸發紅海分開動畫
+            advanceGame();
+        }
+
+        function nextTeam() {
+            advanceGame();
+        }
+
+        function advanceGame() {
+            currentQIndex++;
+            currentTeam = currentTeam === 1 ? 2 : 1;
+            
+            if (correctCount >= totalToWin) {
+                setTimeout(() => {
+                    document.getElementById('victory-message').style.display = 'block';
+                }, 1500); 
+            } else if (currentQIndex < questions.length) {
+                prepareNext();
+            } else {
+                document.getElementById('q-text').innerText = "題庫已答完！";
+                document.getElementById('start-btn').style.display = 'none';
+            }
+        }
+
+        // 核心動畫：控制海浪的寬度，讓中間露出乾地
+        function updateSea() {
+            // 計算海浪還剩下多少百分比 (從 50% 遞減到 0%)
+            let remainingSea = 50 - ((correctCount / totalToWin) * 50);
+            if(remainingSea < 0) remainingSea = 0; 
+            
+            document.getElementById('s-left').style.width = `${remainingSea}%`;
+            document.getElementById('s-right').style.width = `${remainingSea}%`;
+        }
+
+        prepareNext();
+    </script>
+</body>
+</html>r
