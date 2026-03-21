@@ -188,3 +188,241 @@
         #game-body.quiz-active #s-left {
             transform: translateX(-100%) !important; /* 強制海浪退去到左邊外面 */
         }
+        #game-body.quiz-active #s-right {
+            transform: scaleX(-1) translateX(100%) !important; /* 鏡射後退到右邊外面 */
+        }
+        /* 👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈 */
+
+        /* --- 以下問答區樣式與過關金句樣式 (修正定位以適應滑動) --- */
+        .quiz-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .turn-indicator {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: #00d2d3;
+            margin-bottom: 15px;
+            background: rgba(0, 210, 211, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        .timer { font-size: 4em; font-weight: 900; color: #ff6b6b; margin-bottom: 20px; }
+        .dynamic-text { height: 150px; display: flex; flex-direction: column; justify-content: center; margin-bottom: 20px; }
+        .question { font-size: 1.6em; line-height: 1.4; }
+        .answer { font-size: 1.8em; color: #1dd1a1; font-weight: bold; display: none; margin-top: 15px;}
+        
+        button { border: none; padding: 15px 30px; font-size: 1.2em; border-radius: 50px; cursor: pointer; margin: 8px; transition: 0.3s; font-weight: bold; }
+        button:hover { transform: scale(1.05); }
+        .btn-start { background: #feca57; color: #222; }
+        .btn-show { background: #48dbfb; color: #222; display: none; }
+        .btn-correct { background: #1dd1a1; color: #222; display: none; }
+        .btn-wrong { background: #576574; color: white; display: none; }
+
+        /* 通關金句畫面 (修正定位以適應滑動) */
+        #victory-message {
+            display: none;
+            position: fixed; /* 讓金句浮在最上層 */
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            border: 3px solid #f1c40f;
+            z-index: 100;
+            width: 80%;
+            box-sizing: border-box;
+        }
+        #victory-message h2 { color: #1dd1a1; font-size: 3em; margin: 0 0 15px 0;}
+        #victory-message h3 { color: #f1c40f; font-size: 2.2em; line-height: 1.6; font-weight: 700; margin: 0;}
+        #victory-message .reference { color: #bdc3c7; font-size: 1.2em; margin-top: 10px; display: block;}
+
+        /* 響應式修正：在小螢幕上讓內容上下排列並可滑動 */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .sea-container {
+                width: 95%;
+                height: auto;
+                aspect-ratio: 1; /* 保持正方形 */
+                max-width: 500px;
+            }
+            .quiz-container {
+                width: 95%;
+                margin-top: 20px;
+            }
+            h1 { font-size: 2.2em; }
+            .subtitle { font-size: 1em; }
+            .timer { font-size: 3em; }
+            .question { font-size: 1.3em; }
+            .answer { font-size: 1.5em; }
+            #victory-message h2 { font-size: 2em; }
+            #victory-message h3 { font-size: 1.6em; }
+        }
+    </style>
+</head>
+<body id="game-body">
+
+    <h1>🌊 神蹟之路：純 CSS 終極版 🌊</h1>
+    <div class="subtitle">兩組輪流答題，全班共同答對8題，紅海將從兩旁晃動退去！</div>
+
+    <div class="main-container">
+        <div class="sea-container">
+            <div class="sea-background"></div>
+            
+            <div class="seabed-treasure">
+                <div class="seabed-treasure-icon">
+                    <div class="treasure-coin coin-gold"></div>
+                    <div class="treasure-coin coin-silver"></div>
+                </div>
+                <div class="seabed-treasure-text">埃及人的財物 (金器、銀器)</div>
+            </div>
+            <div class="sea-wave sea-left" id="s-left"></div>
+            <div class="sea-wave sea-right" id="s-right"></div>
+            </div>
+
+        <div class="quiz-container">
+            <div class="turn-indicator" id="turn-text">現在輪到：第一組</div>
+            <div class="timer" id="timer-text">10</div>
+            
+            <div class="dynamic-text">
+                <div class="question" id="q-text">準備好目睹神蹟了嗎？點擊開始！</div>
+                <div class="answer" id="a-text">答案顯示區</div>
+            </div>
+            
+            <button class="btn-start" id="start-btn" onclick="startRound()">開始計時 (10秒)</button>
+            <button class="btn-show" id="show-ans-btn" onclick="showAnswer()">時間暫停 / 顯示答案</button>
+            <br>
+            <button class="btn-correct" id="correct-btn" onclick="markCorrect()">答對了！海水退去</button>
+            <button class="btn-wrong" id="wrong-btn" onclick="nextTeam()">不會 / 超時 (換組)</button>
+        </div>
+    </div>
+
+    <div id="victory-message">
+        <h2>🎉 紅海開了！我們得救了！</h2>
+        <h3>「耶和華果然為我們行了大事，<br>我們就歡喜。」<br>
+            <span class="reference">詩篇 126:3</span>
+        </h3>
+    </div>
+
+    <script>
+        // 題庫 (符合聖經/歷史背景)
+        const questions = [
+            { q: "以色列人在埃及住了多少年？", a: "430年" },
+            { q: "他們離開時，把什麼包在衣服中扛在肩頭上？", a: "沒有酵的生麵 (無酵餅)" },
+            { q: "以色列人離開時，向埃及人要了什麼東西？", a: "金器、銀器和衣裳" },
+            { q: "白天時，上帝用什麼在前面引導他們的路？", a: "雲柱" },
+            { q: "夜間時，上帝用什麼光照他們？", a: "火柱" },
+            { q: "上帝為什麼不帶他們走最近的「非利士地」的道路？", a: "怕百姓遇見打仗後悔，就回埃及去" },
+            { q: "當法老帶兵追來，以色列人非常害怕時，摩西叫百姓怎麼做？", a: "不要懼怕，只管站住！" },
+            { q: "摩西向海伸杖後，發生了什麼事？", a: "紅海分開，以色列人走乾地" },
+            { q: "法老的追兵最後的下場是什麼？", a: "海水回流，全軍淹沒在海中" },
+            { q: "以色列人到了「瑪拉」，那裡的水為什麼不能喝？", a: "因為水是苦的" },
+            { q: "上帝指示摩西把什麼丟進水裡，水就變甜了？", a: "一棵樹" },
+            { q: "他們後來到了「以琳」，那裡有什麼？", a: "十二股水泉，七十棵棕樹" },
+            { q: "今天的主題金句說，逾越節的羔羊基督，已經被殺獻祭了？", a: "哥林多前書 5:7" }
+        ];
+
+        let currentQIndex = 0;
+        let correctCount = 0;
+        const totalToWin = 8; // 兩組共同答對8題即過關
+        let currentTeam = 1; 
+        let timeLeft = 10;
+        let timerInterval;
+
+        questions.sort(() => Math.random() - 0.5);
+
+        function prepareNext() {
+            document.getElementById('turn-text').innerText = currentTeam === 1 ? "現在輪到：第一組" : "現在輪到：第二組";
+            document.getElementById('turn-text').style.color = currentTeam === 1 ? "#00d2d3" : "#feca57";
+            
+            document.getElementById('q-text').innerText = "請點擊「開始計時」看題目";
+            document.getElementById('a-text').style.display = 'none';
+            document.getElementById('timer-text').innerText = "10";
+            document.getElementById('timer-text').style.color = "#ff6b6b";
+            
+            document.getElementById('start-btn').style.display = 'inline-block';
+            document.getElementById('show-ans-btn').style.display = 'none';
+            document.getElementById('correct-btn').style.display = 'none';
+            document.getElementById('wrong-btn').style.display = 'none';
+        }
+
+        function startRound() {
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('show-ans-btn').style.display = 'inline-block';
+            document.getElementById('q-text').innerText = questions[currentQIndex].q;
+            
+            timeLeft = 10;
+            document.getElementById('timer-text').innerText = timeLeft;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-text').innerText = timeLeft;
+                if (timeLeft <= 3) document.getElementById('timer-text').style.color = "#ee5253";
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timer-text').innerText = "超時！";
+                    showAnswer(); 
+                }
+            }, 1000);
+        }
+
+        function showAnswer() {
+            clearInterval(timerInterval); 
+            document.getElementById('a-text').innerText = "答案：" + questions[currentQIndex].a;
+            document.getElementById('a-text').style.display = 'block'; 
+            
+            document.getElementById('show-ans-btn').style.display = 'none';
+            document.getElementById('correct-btn').style.display = 'inline-block';
+            document.getElementById('wrong-btn').style.display = 'inline-block';
+        }
+
+        // 👉 👉 JS 邏輯修正：這是「上帝吹風」的指令！ 👈 👈
+        // 答對了！海水退去
+        function markCorrect() {
+            correctCount++;
+            
+            // 1. 我們在 <body> 加入 'quiz-active' 這個類別。
+            // 配合 CSS 中補上的 .quiz-active 規則，紅海就會開始位移退去！
+            document.getElementById('game-body').classList.add('quiz-active');
+            
+            // 2. 為了讓動畫跑完，我們等待 1.5 秒再執行後面的邏輯。
+            setTimeout(() => {
+                advanceGame();
+            }, 1500); 
+        }
+
+        function nextTeam() {
+            advanceGame();
+        }
+
+        function advanceGame() {
+            currentQIndex++;
+            currentTeam = currentTeam === 1 ? 2 : 1;
+            
+            if (correctCount >= totalToWin) {
+                setTimeout(() => {
+                    document.getElementById('victory-message').style.display = 'block';
+                }, 1500); 
+            } else if (currentQIndex < questions.length) {
+                prepareNext();
+            } else {
+                document.getElementById('q-text').innerText = "題庫已答完！求神繼續帶領！";
+                document.getElementById('start-btn').style.display = 'none';
+            }
+        }
+
+        // 啟動遊戲
+        prepareNext();
+    </script>
+</body>
+</html>
