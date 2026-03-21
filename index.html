@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌊 紅海開路大挑戰：俯瞰動態版 🌊</title>
+    <title>🌊 紅海開路大挑戰：俯瞰動態版 (終極修正) 🌊</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
         
@@ -73,18 +73,17 @@
             font-weight: bold;
         }
 
-        /* 👉 修正 1.1: 這裡不再使用之前的海浪圖，而是純 CSS 生成 */
+        /* 海浪基礎樣式 (純 CSS 生成) */
         .sea-wave {
             position: absolute;
             top: 0;
             width: 50%; height: 100%;
-            /* background-image 移除 */
             z-index: 2;
-            transition: transform 1.5s ease-in-out; /* 開路動畫 */
+            transition: transform 1.5s ease-in-out; /* 退去動畫 */
             overflow: hidden; /* 掃光效果容器 */
         }
 
-        /* 左邊的海水：純 CSS 高質感漸層 */
+        /* 左邊的海水 */
         .sea-left {
             left: 0;
             background: 
@@ -93,7 +92,7 @@
             background-size: 400% 100%;
             border-right: 3px solid rgba(255,255,255,0.7); /* 海浪邊緣反光 */
             box-shadow: 5px 0 15px rgba(0,0,0,0.6);
-            /* 海浪晃動動畫 (左) */
+            /* 晃動與漸層動畫 */
             animation: wave-sway-left 4s ease-in-out infinite, waves-bg 5s linear infinite;
         }
         /* 左邊海浪的掃光效果 */
@@ -158,12 +157,14 @@
             100% { transform: translate(100%, -100%) rotate(-45deg); }
         }
 
-        /* 👉 修正 2.1: CSS 類別定義退去位置，讓 JS 來觸發 */
+        /* 👉 終極修正 1.1: CSS 類別定義退去位置，並「強制暫停晃動動畫」 */
         .quiz-active #s-left {
             transform: translateX(-100%); /* 退到左邊外面 */
+            animation-play-state: paused !important; /* 👉 暫停晃動，不讓電腦打架 */
         }
         .quiz-active #s-right {
             transform: scaleX(-1) translateX(100%); /* 鏡射後退到右邊外面 */
+            animation-play-state: paused !important; /* 👉 暫停晃動，不讓電腦打架 */
         }
 
         /* --- 以下問答區樣式不變 --- */
@@ -251,7 +252,6 @@
     </div>
 
     <script>
-        // 題庫 (已修正猶太曆筆誤)
         const questions = [
             { q: "以色列人在埃及住了多少年？", a: "430年" },
             { q: "他們離開時，把什麼包在衣服中扛在肩頭上？", a: "沒有酵的生麵 (無酵餅)" },
@@ -292,7 +292,7 @@
             document.getElementById('correct-btn').style.display = 'none';
             document.getElementById('wrong-btn').style.display = 'none';
             
-            // 👉 重要修正：海水退去動畫完成後，再重置類別讓海浪回到原位
+            // 👉 重要修正：在動畫完成後，再準備下一題時清除動畫類別
             document.getElementById('game-body').classList.remove('quiz-active');
         }
 
@@ -326,7 +326,7 @@
             document.getElementById('wrong-btn').style.display = 'inline-block';
         }
 
-        // 👉 修正 2.3: 答對邏輯加上延時，讓海浪退去動畫能順利跑完
+        // 👉 終極修正 2.1: 答對邏輯加上延時，讓海浪退去動畫能順利跑完
         function markCorrect() {
             correctCount++;
             
