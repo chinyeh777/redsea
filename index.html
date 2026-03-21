@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌊 紅海開路大挑戰：俯瞰動態版 (修正滑動) 🌊</title>
+    <title>🌊 紅海開路大挑戰：俯瞰動態版 🌊</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
         
@@ -17,10 +17,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* 👉 修正在這裡：放寬高度限制，並開啟滑動 */
-            min-height: 100vh; /* 確保至少有螢幕這麼高 */
-            overflow-y: auto;  /* 當內容變多時，開啟垂直滑動 */
-            position: relative;
+            height: 100vh;
+            overflow: hidden;
         }
         h1 {
             color: #f1c40f;
@@ -42,8 +40,6 @@
             gap: 40px;
             width: 95%;
             max-width: 1200px;
-            /* 👉 修正在這裡：讓內容可以自然垂直展開，不要卡住 */
-            height: auto;
         }
 
         /* 俯瞰紅海展示區 (1:1 比例) */
@@ -57,11 +53,9 @@
             border: 5px solid #2c3e50;
             /* 底層：暫時的海底漸層 (之後可替換為圖片) */
             background: linear-gradient(to bottom, #2c3e50, #1a1d21);
-            /* 👉 確保小螢幕上不會爆開 */
-            flex-shrink: 0;
         }
 
-        /* 俯瞰以色列人 */
+        /* 俯瞰以色列人 (暫時替代方塊) */
         .israelites-top {
             position: absolute;
             bottom: 20px;
@@ -79,40 +73,51 @@
             font-weight: bold;
         }
 
-        /* 海浪遮罩 */
+        /* 👉 修正 1.1: 這裡不再使用之前的海浪圖，而是純 CSS 生成 */
         .sea-wave {
             position: absolute;
             top: 0;
             width: 50%; height: 100%;
-            background-image: url('./images/sea_wave.png');
-            background-size: cover;
-            background-position: center;
+            /* background-image 移除 */
             z-index: 2;
-            transition: transform 1.5s ease-in-out;
-            overflow: hidden;
+            transition: transform 1.5s ease-in-out; /* 開路動畫 */
+            overflow: hidden; /* 掃光效果容器 */
         }
 
-        /* 左邊海浪 */
+        /* 左邊的海水：純 CSS 高質感漸層 */
         .sea-left {
             left: 0;
-            animation: wave-sway-left 4s ease-in-out infinite;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.4), transparent 30%),
+                linear-gradient(90deg, #0984e3, #74b9ff, #0984e3);
+            background-size: 400% 100%;
+            border-right: 3px solid rgba(255,255,255,0.7); /* 海浪邊緣反光 */
+            box-shadow: 5px 0 15px rgba(0,0,0,0.6);
+            /* 海浪晃動動畫 (左) */
+            animation: wave-sway-left 4s ease-in-out infinite, waves-bg 5s linear infinite;
         }
-        /* 左邊海浪掃光 */
+        /* 左邊海浪的掃光效果 */
         .sea-left::after {
             content: '';
             position: absolute;
             top: -50%; left: -50%;
             width: 200%; height: 200%;
-            background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+            background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
             transform: rotate(45deg);
             animation: light-sweep 3s linear infinite;
         }
 
-        /* 右邊海浪：鏡射 */
+        /* 右邊的海水：使用程式鏡射 */
         .sea-right {
             right: 0;
-            transform: scaleX(-1);
-            animation: wave-sway-right 4s ease-in-out infinite;
+            background: 
+                radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.4), transparent 30%),
+                linear-gradient(-90deg, #0984e3, #74b9ff, #0984e3);
+            background-size: 400% 100%;
+            border-left: 3px solid rgba(255,255,255,0.7);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.6);
+            /* 鏡射後的晃動動畫需要反向 */
+            animation: wave-sway-right 4s ease-in-out infinite, waves-bg 5s linear infinite;
         }
         /* 右邊海浪掃光 (修正方向) */
         .sea-right::after {
@@ -120,42 +125,48 @@
             position: absolute;
             top: -50%; left: -50%;
             width: 200%; height: 200%;
-            background: linear-gradient(to top right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+            background: linear-gradient(to top right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
             transform: rotate(-45deg);
             animation: light-sweep-reverse 3s linear infinite;
         }
 
-        /* 海浪晃動動畫 (左) */
+        /* 波浪動態漸層動畫定義 */
+        @keyframes waves-bg {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 400% 0%; }
+        }
+
+        /* 海浪晃動動畫定義 (左) */
         @keyframes wave-sway-left {
             0%, 100% { transform: translateX(0) scaleY(1); }
             50% { transform: translateX(5px) scaleY(1.02); }
         }
-        /* 海浪晃動動畫 (右) */
+        /* 海浪晃動動畫定義 (右：需考慮鏡射) */
         @keyframes wave-sway-right {
             0%, 100% { transform: scaleX(-1) translateX(0) scaleY(1); }
             50% { transform: scaleX(-1) translateX(-5px) scaleY(1.02); }
         }
 
-        /* 掃光動畫 (正向) */
+        /* 掃光動畫定義 (正向) */
         @keyframes light-sweep {
             0% { transform: translate(-100%, -100%) rotate(45deg); }
             100% { transform: translate(100%, 100%) rotate(45deg); }
         }
-        /* 掃光動畫 (反向) */
+        /* 掃光動畫定義 (反向，用於鏡射後的右側) */
         @keyframes light-sweep-reverse {
             0% { transform: translate(-100%, 100%) rotate(-45deg); }
             100% { transform: translate(100%, -100%) rotate(-45deg); }
         }
 
-        /* 互動動畫類 */
+        /* 👉 修正 2.1: CSS 類別定義退去位置，讓 JS 來觸發 */
         .quiz-active #s-left {
-            transform: translateX(-100%);
+            transform: translateX(-100%); /* 退到左邊外面 */
         }
         .quiz-active #s-right {
-            transform: scaleX(-1) translateX(100%);
+            transform: scaleX(-1) translateX(100%); /* 鏡射後退到右邊外面 */
         }
 
-        /* 問答區 */
+        /* --- 以下問答區樣式不變 --- */
         .quiz-container {
             flex: 1;
             background: rgba(255, 255, 255, 0.05);
@@ -190,7 +201,7 @@
 
         #victory-message {
             display: none;
-            position: fixed; /* 👉 讓過關畫面浮在最上層，即使滑動也不會被切掉 */
+            position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(0, 0, 0, 0.95);
@@ -199,36 +210,9 @@
             border: 3px solid #f1c40f;
             z-index: 100;
             width: 80%;
-            box-sizing: border-box;
         }
         #victory-message h2 { color: #1dd1a1; font-size: 3em; margin: 0 0 15px 0;}
-        #victory-message h3 { color: #f1c40f; font-size: 2.2em; line-height: 1.6; font-weight: 700; margin: 0;}
-        #victory-message .reference { color: #bdc3c7; font-size: 1.2em; margin-top: 10px; display: block;}
-
-        /* 👉 響應式修正：在小螢幕上讓內容上下排列 */
-        @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column; /* 上下排列 */
-                gap: 20px;
-            }
-            .sea-container {
-                width: 95%; /* 變寬 */
-                height: auto; /* 高度自動 */
-                aspect-ratio: 1; /* 保持正方形 */
-                max-width: 500px;
-            }
-            .quiz-container {
-                width: 95%;
-                margin-top: 20px;
-            }
-            h1 { font-size: 2.2em; }
-            .subtitle { font-size: 1em; }
-            .timer { font-size: 3em; }
-            .question { font-size: 1.3em; }
-            .answer { font-size: 1.5em; }
-            #victory-message h2 { font-size: 2em; }
-            #victory-message h3 { font-size: 1.6em; }
-        }
+        #victory-message h3 { color: #f1c40f; font-size: 2em; line-height: 1.5;}
     </style>
 </head>
 <body id="game-body">
@@ -261,19 +245,13 @@
         </div>
     </div>
 
-    <div style="height: 50vh; width: 100%; display: flex; align-items: center; justify-content: center; color: #576574; font-size: 1.2em; margin-top: 50px; border-top: 1px dashed #2c3e50;">
-        (此區為測試滑動，可上下滑動網頁。答對題目時，海水會對稱退去！)
-    </div>
-
     <div id="victory-message">
         <h2>🎉 紅海開了！我們得救了！</h2>
-        <h3>「耶和華果然為我們行了大事，<br>我們就歡喜。」<br>
-            <span class="reference">詩篇 126:3</span>
-        </h3>
+        <h3>「我們逾越節的羔羊基督，<br>已經被殺獻祭了。」<br>(哥林多前書 5:7)</h3>
     </div>
 
     <script>
-        // 題庫 (隨機洗牌，符合聖經/歷史背景)
+        // 題庫 (已修正猶太曆筆誤)
         const questions = [
             { q: "以色列人在埃及住了多少年？", a: "430年" },
             { q: "他們離開時，把什麼包在衣服中扛在肩頭上？", a: "沒有酵的生麵 (無酵餅)" },
@@ -287,12 +265,12 @@
             { q: "以色列人到了「瑪拉」，那裡的水為什麼不能喝？", a: "因為水是苦的" },
             { q: "上帝指示摩西把什麼丟進水裡，水就變甜了？", a: "一棵樹" },
             { q: "他們後來到了「以琳」，那裡有什麼？", a: "十二股水泉，七十棵棕樹" },
-            { q: "宗教年的8月是猶太曆法的什麼月？", a: "瑪西班月" } // 修正原題庫筆誤
+            { q: "宗教年的8月是猶太曆法的什麼月？", a: "瑪西班月" }
         ];
 
         let currentQIndex = 0;
         let correctCount = 0;
-        const totalToWin = 8; // 兩組共同答對8題即過關
+        const totalToWin = 8; 
         let currentTeam = 1; 
         let timeLeft = 10;
         let timerInterval;
@@ -314,11 +292,10 @@
             document.getElementById('correct-btn').style.display = 'none';
             document.getElementById('wrong-btn').style.display = 'none';
             
-            // 確保海浪回到原位
+            // 👉 重要修正：海水退去動畫完成後，再重置類別讓海浪回到原位
             document.getElementById('game-body').classList.remove('quiz-active');
         }
 
-        // 開始計時
         function startRound() {
             document.getElementById('start-btn').style.display = 'none';
             document.getElementById('show-ans-btn').style.display = 'inline-block';
@@ -339,7 +316,6 @@
             }, 1000);
         }
 
-        // 顯示答案
         function showAnswer() {
             clearInterval(timerInterval); 
             document.getElementById('a-text').innerText = "答案：" + questions[currentQIndex].a;
@@ -350,36 +326,35 @@
             document.getElementById('wrong-btn').style.display = 'inline-block';
         }
 
-        // 記為答對
+        // 👉 修正 2.3: 答對邏輯加上延時，讓海浪退去動畫能順利跑完
         function markCorrect() {
             correctCount++;
             
-            // 觸發紅海分開動畫：答對一題即全開 (簡化互動)
+            // 1. 添加類別觸發開海動畫 (由上往下、左右分別退去)
             document.getElementById('game-body').classList.add('quiz-active');
             
-            advanceGame();
+            // 2. 使用 setTimeout 等待 1.5 秒 (CSS transition 時間)，再進行遊戲邏輯更新
+            setTimeout(() => {
+                advanceGame();
+            }, 1500); 
         }
 
-        // 不會 / 超時 / 換組
         function nextTeam() {
             advanceGame();
         }
 
-        // 推進遊戲進程
         function advanceGame() {
             currentQIndex++;
             currentTeam = currentTeam === 1 ? 2 : 1;
             
-            // 檢查是否過關
             if (correctCount >= totalToWin) {
+                // 過關，不用清除 quiz-active 類別，保留海水分開畫面
                 setTimeout(() => {
-                    // 給一點時間讓動畫跑完
                     document.getElementById('victory-message').style.display = 'block';
                 }, 1500); 
             } else if (currentQIndex < questions.length) {
-                // 如果您希望答對一題退去一點，答錯換組時回到原位，可以保留 prepareNext() 裡的 remove class
-                // 這裡我們在 1.5 秒動畫完成後再準備下一題
-                setTimeout(prepareNext, 1500);
+                // 準備下一題，prepareNext 裡會清除 quiz-active 類別
+                prepareNext();
             } else {
                 document.getElementById('q-text').innerText = "題庫已答完！求神繼續帶領！";
                 document.getElementById('start-btn').style.display = 'none';
