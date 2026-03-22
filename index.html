@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌊 紅海開路大挑戰：純 CSS 終極修正版 🌊</title>
+    <title>🌊 神蹟之路：過紅海大挑戰 🌊</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
         
@@ -54,11 +54,15 @@
             border: 5px solid #2c3e50;
         }
 
+        /* 👉 修正：加入您指定的底圖路徑 */
         .sea-background {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background-color: #1a1d21; 
+            background-image: url('./images/sea_parted.jpg'); /* 海水退去後會顯示這張圖 */
+            background-size: cover;
+            background-position: center;
+            background-color: #1a1d21; /* 如果圖片載入失敗的備用底色 */
             z-index: 1;
         }
 
@@ -81,7 +85,7 @@
         .coin-silver { background-color: #bdc3c7; box-shadow: 0 0 5px #bdc3c7; }
         .seabed-treasure-text { color: #f1c40f; font-size: 1em; font-weight: 700; }
 
-        /* 👉 新增：海浪的「門」（用來負責左右退去，不干擾海浪本身的晃動） */
+        /* 海浪的「門」（用來負責左右退去，不干擾海浪本身的晃動） */
         .sea-door {
             position: absolute;
             top: 0;
@@ -298,7 +302,7 @@
         let currentTeam = 1; 
         let timeLeft = 10;
         let timerInterval;
-        let isProcessing = false; // 👉 新增：防連點鎖定機制
+        let isProcessing = false; // 防連點鎖定機制
 
         questions.sort(() => Math.random() - 0.5);
 
@@ -361,7 +365,7 @@
             isProcessing = true;
             correctCount++;
             
-            // 👉 計算應該退去多少百分比 (例如：答對 1 題 = 12.5%，8 題 = 100%)
+            // 計算應該退去多少百分比 (例如：答對 1 題 = 12.5%，8 題 = 100%)
             let partPercentage = (correctCount / totalToWin) * 100;
             if (partPercentage > 100) partPercentage = 100;
 
