@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌊 紅海開路大挑戰：純 CSS 終極修正版 🌊</title>
+    <title>🌊 紅海開路大挑戰：過紅海神蹟 🌊</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
         
@@ -61,7 +61,7 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            /* background-image: url('./images/sea_parted.jpg'); 註解：如果您想用 AI 圖片可以開啟 */
+            /* background-image: url('./images/sea_parted.jpg'); 👉 保留註解結構 */
             background-size: cover;
             background-position: center;
             background-color: #1a1d21; /* 目前預設純色底 */
@@ -304,6 +304,10 @@
         </div>
     </div>
 
+    <div style="height: 50vh; width: 100%; display: flex; align-items: center; justify-content: center; color: #576574; font-size: 1.2em; margin-top: 50px; border-top: 1px dashed #2c3e50;">
+        (此區為測試滑動，可上下滑動網頁。答對題目時，海水會對稱退去！)
+    </div>
+
     <div id="victory-message">
         <h2>🎉 紅海開了！我們得救了！</h2>
         <h3>「耶和華果然為我們行了大事，<br>我們就歡喜。」<br>
@@ -312,7 +316,7 @@
     </div>
 
     <script>
-        // 題庫
+        // 題庫 (符合聖經/歷史背景)
         const questions = [
             { q: "以色列人在埃及住了多少年？", a: "430年" },
             { q: "他們離開時，把什麼包在衣服中扛在肩頭上？", a: "沒有酵的生麵 (無酵餅)" },
@@ -326,16 +330,17 @@
             { q: "以色列人到了「瑪拉」，那裡的水為什麼不能喝？", a: "因為水是苦的" },
             { q: "上帝指示摩西把什麼丟進水裡，水就變甜了？", a: "一棵樹" },
             { q: "他們後來到了「以琳」，那裡有什麼？", a: "十二股水泉，七十棵棕樹" },
-            { q: "今天的主題金句說，逾越節的羔羊基督，已經被殺獻祭了？", a: "哥林多前書 5:7" }
+            { q: "宗教年的8月是猶太曆法的什麼月？", a: "瑪西班月" } // 修正原題庫筆誤
         ];
 
         let currentQIndex = 0;
         let correctCount = 0;
-        const totalToWin = 8; 
+        const totalToWin = 8; // 兩組共同答對8題即過關
         let currentTeam = 1; 
         let timeLeft = 10;
         let timerInterval;
 
+        // 隨機洗牌題目
         questions.sort(() => Math.random() - 0.5);
 
         // 初始化準備下一題
@@ -353,8 +358,8 @@
             document.getElementById('correct-btn').style.display = 'none';
             document.getElementById('wrong-btn').style.display = 'none';
             
-            // 重要：在準備下一題時，重置海浪回到原位
-            document.getElementById('game-body').classList.remove('quiz-active');
+            // 重要：在準備下一題時，重置海浪回到原位 (此版本答對一次就全開，prepareNext 用不到這行，但保留代碼邏輯)
+            // document.getElementById('game-body').classList.remove('quiz-active');
         }
 
         // 開始計時
@@ -363,7 +368,7 @@
             document.getElementById('show-ans-btn').style.display = 'inline-block';
             document.getElementById('q-text').innerText = questions[currentQIndex].q;
             
-            // 👉👉👉 👉 修正這裡！避免計時器亂跳，確保先清空舊的！ 👈👈👈 👈
+            // 👉 👉 👉👉 修正這裡！清空舊計時器排隊陷阱 👈👈👈 👈
             if(timerInterval) clearInterval(timerInterval);
 
             timeLeft = 10;
@@ -392,11 +397,13 @@
             document.getElementById('wrong-btn').style.display = 'inline-block';
         }
 
-        // 答對了！海水退去 (JS 指令)
+        // 👉 👉 JS 邏輯修正：這是答對時向 CSS 發出訊號的指令！ 👈 👈
+        // 答對了！海水退去
         function markCorrect() {
             correctCount++;
             
-            // 1. 添加類別觸發開海動畫 (由上往下對稱分別退去)
+            // 1. 我們在 <body> 加入 'quiz-active' 這個類別。
+            // 配合 CSS 中補上的 .quiz-active 規則和 paused 動畫指令，紅海就會開始位移退去！
             document.getElementById('game-body').classList.add('quiz-active');
             
             // 2. 為了讓動畫跑完，我們等待 1.5 秒 (CSS transition 時間)，再進行遊戲邏輯更新
@@ -405,12 +412,10 @@
             }, 1500); 
         }
 
-        // 答錯/超時 (換組)
         function nextTeam() {
             advanceGame();
         }
 
-        // 推進遊戲進程
         function advanceGame() {
             currentQIndex++;
             currentTeam = currentTeam === 1 ? 2 : 1;
@@ -418,12 +423,12 @@
             // 檢查是否過關
             if (correctCount >= totalToWin) {
                 setTimeout(() => {
-                    // 給一點時間讓動畫跑完，不要立刻重置畫面
+                    // 給一點時間讓動畫跑完
                     document.getElementById('victory-message').style.display = 'block';
                 }, 1500); 
             } else if (currentQIndex < questions.length) {
                 // 如果您希望答對一題退去一點，答錯換組時回到原位，可以在這裡呼叫 prepareNext()
-                // 因為開海全退去需要 1.5 秒，這裡我也用 setTimeout 延遲準備下一題
+                // 因為我們設定答對全退去需要 1.5 秒，這裡我們延遲準備下一題
                 setTimeout(prepareNext, 1500); 
             } else {
                 document.getElementById('q-text').innerText = "題庫已答完！求神繼續帶領！";
