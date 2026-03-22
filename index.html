@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌊 紅海開路大挑戰：純 CSS 終極版 🌊</title>
+    <title>🌊 紅海開路大挑戰：純 CSS 終極修正版 🌊</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
         
@@ -56,18 +56,19 @@
             border: 5px solid #2c3e50;
         }
 
-        /* 👉👉👉👉 視覺完整度修正：海底底圖，放上已經分開的精美 AI 圖片 👈👈👈👈 */
-        .seabed-background {
+        /* 底層： seabed (您原本註解的那段底圖我保留了結構) */
+        .sea-background {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background-image: url('./images/sea_parted.jpg'); /* 👉 請確認 images 資料夾內有此圖 */
+            /* background-image: url('./images/sea_parted.jpg'); 註解：如果您想用 AI 圖片可以開啟 */
             background-size: cover;
             background-position: center;
+            background-color: #1a1d21; /* 目前預設純色底 */
             z-index: 1;
         }
-        
-        /* 👉👉👉👉 👉 新增：金銀財寶標籤 (使用 CSS 繪製簡單圖示) 👈👈👈👈 👈 */
+
+        /* 海底金銀財寶與文字標籤 */
         .seabed-treasure {
             position: absolute;
             bottom: 20px;
@@ -85,7 +86,6 @@
             display: flex;
             gap: 5px;
         }
-        /* CSS 繪製簡單的圓形，代表金幣/銀幣 */
         .treasure-coin { width: 15px; height: 15px; border-radius: 50%; }
         .coin-gold { background-color: #f1c40f; box-shadow: 0 0 5px #f1c40f; }
         .coin-silver { background-color: #bdc3c7; box-shadow: 0 0 5px #bdc3c7; }
@@ -94,39 +94,30 @@
             font-size: 1em;
             font-weight: 700;
         }
-        /* 👉👉👉👉 👉👈👈👈👈👈 👉👈👈👈👈👈 */
 
-        /* 👉👉👉👉👉👉👉👉👉 終極修正：徹底純 CSS 動態海浪 👈👈👈👈👈👈👈👈👈 */
-        /* 海浪遮罩：設定開路動畫 */
+        /* 👉👉👉👉 👉 純 CSS 繪製的神祕動態紅海 (去背、晃動、掃光) 👈👈👈👈 👈 */
+        /* 海浪遮罩：設定基礎樣式 */
         .sea-wave {
             position: absolute;
             top: 0;
             width: 50%; height: 100%;
-            /* 👉👉👉 👉 這裡移除任何圖片 dependency！完全純 CSS 繪製！👈👈👈 👈 */
             /* 使用漸層和多層背景模擬波紋 */
             background: linear-gradient(90deg, #0984e3, #74b9ff, #0984e3);
             background-size: 400% 100%;
-            z-index: 3; /* 確保在海底底圖和金銀財寶上面 */
-            /* 👉👉 👉👉 這是開海動畫的關鍵：過渡效果 transition 👈👈👈 👈 */
-            transition: transform 1.5s ease-in-out; /* 由 JavaScript 觸發位移 */
+            z-index: 3; /* 確保在海底上面 */
+            /* 退去位移動畫 */
+            transition: transform 1.5s ease-in-out; /* 由 JavaScript 觸發 */
             overflow: hidden; /* 掃光容器 */
             border-right: 3px solid rgba(255,255,255,0.7); /* 海浪邊緣反光 */
             box-shadow: 5px 0 15px rgba(0,0,0,0.6);
             
-            /* 👉 新增：波浪動態背景動畫 (純 CSS 實現) */
+            /* 波浪動態漸層背景動畫 */
             animation: waves-bg 5s linear infinite; 
         }
         
-        /* 波浪動態漸層動畫定義 */
-        @keyframes waves-bg {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 400% 0%; }
-        }
-
         /* 左邊的海水 */
         .sea-left {
             left: 0;
-            /* 海浪晃動動畫 (左) */
             animation: waves-bg 5s linear infinite, wave-sway-left 4s ease-in-out infinite;
         }
         /* 左邊海浪的掃光效果 */
@@ -143,7 +134,7 @@
         /* 右邊的海水：使用程式鏡射 */
         .sea-right {
             right: 0;
-            transform: scaleX(-1); /* 👉 專業鏡射，不需第二張圖 */
+            transform: scaleX(-1); /* 鏡射 */
             /* 鏡射後的晃動動畫需要反向 */
             animation: waves-bg 5s linear infinite, wave-sway-right 4s ease-in-out infinite;
         }
@@ -158,7 +149,11 @@
             animation: light-sweep-reverse 3s linear infinite;
         }
         
-        /* 👈👈👈👈👈👈👈👈👈 終極修正 👈👈👈👈👈👈👈👈👈 */
+        /* 波浪動態漸層動畫定義 */
+        @keyframes waves-bg {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 400% 0%; }
+        }
 
         /* 海浪晃動動畫定義 (左) */
         @keyframes wave-sway-left {
@@ -182,16 +177,18 @@
             100% { transform: translate(100%, -100%) rotate(-45deg); }
         }
 
-        /* 👉👉👉👉👉👉👉👉👉👉👉 您的代碼漏掉的最關鍵修正！！！！！ 👈👈👈👈👈👈👈👈👈👈👈👈 */
+        /* 👉👉👉 👉👉👉👉👉👉👉 👉👉👉 👉👉👈 👈 👈 👈 👈 👈 👈 👈 👈 👈 */
         /* 當點擊答對時， JavaScript 會在 <body> 加入 .quiz-active 類別 */
-        /* 這裡定義當類別加入時，海浪該「如何動」：就是利用 transform 位移出去！ */
+        /* 當類別加入時，定義海浪該「如何動」：就是分別對稱退去！ */
         #game-body.quiz-active #s-left {
             transform: translateX(-100%) !important; /* 強制海浪退去到左邊外面 */
+            animation-play-state: paused !important; /* 👉 終極修正：暫停晃動動畫，以免和過渡位移互斥！ */
         }
         #game-body.quiz-active #s-right {
             transform: scaleX(-1) translateX(100%) !important; /* 鏡射後退到右邊外面 */
+            animation-play-state: paused !important; /* 👉 終極修正：暫停晃動動畫，以免和過渡位移互斥！ */
         }
-        /* 👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈👈 */
+        /* 👈👈👈👈 👈 👈 👈 👈 👈 👈 👈 👈 👈 👈 👈 👈 👈 👈 👈 👈 👈 👈 */
 
         /* --- 以下問答區樣式與過關金句樣式 (修正定位以適應滑動) --- */
         .quiz-container {
@@ -226,7 +223,6 @@
         .btn-correct { background: #1dd1a1; color: #222; display: none; }
         .btn-wrong { background: #576574; color: white; display: none; }
 
-        /* 通關金句畫面 (修正定位以適應滑動) */
         #victory-message {
             display: none;
             position: fixed; /* 讓金句浮在最上層 */
@@ -272,7 +268,7 @@
 </head>
 <body id="game-body">
 
-    <h1>🌊 神蹟之路：純 CSS 終極版 🌊</h1>
+    <h1>🌊 神蹟之路：純 CSS 終極修正版 🌊</h1>
     <div class="subtitle">兩組輪流答題，全班共同答對8題，紅海將從兩旁晃動退去！</div>
 
     <div class="main-container">
@@ -286,9 +282,10 @@
                 </div>
                 <div class="seabed-treasure-text">埃及人的財物 (金器、銀器)</div>
             </div>
+            
             <div class="sea-wave sea-left" id="s-left"></div>
             <div class="sea-wave sea-right" id="s-right"></div>
-            </div>
+        </div>
 
         <div class="quiz-container">
             <div class="turn-indicator" id="turn-text">現在輪到：第一組</div>
@@ -315,7 +312,7 @@
     </div>
 
     <script>
-        // 題庫 (符合聖經/歷史背景)
+        // 題庫
         const questions = [
             { q: "以色列人在埃及住了多少年？", a: "430年" },
             { q: "他們離開時，把什麼包在衣服中扛在肩頭上？", a: "沒有酵的生麵 (無酵餅)" },
@@ -334,13 +331,14 @@
 
         let currentQIndex = 0;
         let correctCount = 0;
-        const totalToWin = 8; // 兩組共同答對8題即過關
+        const totalToWin = 8; 
         let currentTeam = 1; 
         let timeLeft = 10;
         let timerInterval;
 
         questions.sort(() => Math.random() - 0.5);
 
+        // 初始化準備下一題
         function prepareNext() {
             document.getElementById('turn-text').innerText = currentTeam === 1 ? "現在輪到：第一組" : "現在輪到：第二組";
             document.getElementById('turn-text').style.color = currentTeam === 1 ? "#00d2d3" : "#feca57";
@@ -354,13 +352,20 @@
             document.getElementById('show-ans-btn').style.display = 'none';
             document.getElementById('correct-btn').style.display = 'none';
             document.getElementById('wrong-btn').style.display = 'none';
+            
+            // 重要：在準備下一題時，重置海浪回到原位
+            document.getElementById('game-body').classList.remove('quiz-active');
         }
 
+        // 開始計時
         function startRound() {
             document.getElementById('start-btn').style.display = 'none';
             document.getElementById('show-ans-btn').style.display = 'inline-block';
             document.getElementById('q-text').innerText = questions[currentQIndex].q;
             
+            // 👉👉👉 👉 修正這裡！避免計時器亂跳，確保先清空舊的！ 👈👈👈 👈
+            if(timerInterval) clearInterval(timerInterval);
+
             timeLeft = 10;
             document.getElementById('timer-text').innerText = timeLeft;
             
@@ -376,6 +381,7 @@
             }, 1000);
         }
 
+        // 顯示答案
         function showAnswer() {
             clearInterval(timerInterval); 
             document.getElementById('a-text').innerText = "答案：" + questions[currentQIndex].a;
@@ -386,35 +392,39 @@
             document.getElementById('wrong-btn').style.display = 'inline-block';
         }
 
-        // 👉 👉 JS 邏輯修正：這是「上帝吹風」的指令！ 👈 👈
-        // 答對了！海水退去
+        // 答對了！海水退去 (JS 指令)
         function markCorrect() {
             correctCount++;
             
-            // 1. 我們在 <body> 加入 'quiz-active' 這個類別。
-            // 配合 CSS 中補上的 .quiz-active 規則，紅海就會開始位移退去！
+            // 1. 添加類別觸發開海動畫 (由上往下對稱分別退去)
             document.getElementById('game-body').classList.add('quiz-active');
             
-            // 2. 為了讓動畫跑完，我們等待 1.5 秒再執行後面的邏輯。
+            // 2. 為了讓動畫跑完，我們等待 1.5 秒 (CSS transition 時間)，再進行遊戲邏輯更新
             setTimeout(() => {
                 advanceGame();
             }, 1500); 
         }
 
+        // 答錯/超時 (換組)
         function nextTeam() {
             advanceGame();
         }
 
+        // 推進遊戲進程
         function advanceGame() {
             currentQIndex++;
             currentTeam = currentTeam === 1 ? 2 : 1;
             
+            // 檢查是否過關
             if (correctCount >= totalToWin) {
                 setTimeout(() => {
+                    // 給一點時間讓動畫跑完，不要立刻重置畫面
                     document.getElementById('victory-message').style.display = 'block';
                 }, 1500); 
             } else if (currentQIndex < questions.length) {
-                prepareNext();
+                // 如果您希望答對一題退去一點，答錯換組時回到原位，可以在這裡呼叫 prepareNext()
+                // 因為開海全退去需要 1.5 秒，這裡我也用 setTimeout 延遲準備下一題
+                setTimeout(prepareNext, 1500); 
             } else {
                 document.getElementById('q-text').innerText = "題庫已答完！求神繼續帶領！";
                 document.getElementById('start-btn').style.display = 'none';
